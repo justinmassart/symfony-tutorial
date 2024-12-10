@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title "Toutes les recettes" %}
+
+{% block body %}
+    All recipes (more than {{ (totalDuration / 60) | round(0, 'floor') }} hours!)
+    <ul>
+        {% for recipe in recipes %}
+            <li>
+                <a href="{{ path('recipe.show', {id: recipe.id, slug: recipe.slug}) }}">{{ recipe.title }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

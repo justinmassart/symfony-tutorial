@@ -1,0 +1,8 @@
+{% extends 'base.html.twig' %}
+
+{% block title recipe.title | capitalize %}
+
+{% block body %}
+    <h2>{{ recipe.title | capitalize }}</h2>
+    <p>{{ recipe.content }}</p>
+{% endblock %}
