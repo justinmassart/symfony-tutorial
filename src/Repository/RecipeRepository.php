@@ -16,6 +16,14 @@ class RecipeRepository extends ServiceEntityRepository
         parent::__construct($registry, Recipe::class);
     }
 
+    public function findTotalCount()
+    {
+        return $this->createQueryBuilder('r')
+            ->select('COUNT(r) as count')
+            ->getQuery()
+            ->getSingleResult();
+    }
+
     public function findTotalDuration()
     {
         return $this->createQueryBuilder('r')
@@ -47,7 +55,7 @@ class RecipeRepository extends ServiceEntityRepository
         $offset = ($page - 1) * $resultsPerPage;
 
         return $this->createQueryBuilder('r')
-            ->orderBy('r.createdAt', 'ASC')
+            ->orderBy('r.createdAt', 'DESC')
             ->setMaxResults($resultsPerPage)
             ->setFirstResult($offset)
             ->getQuery()
