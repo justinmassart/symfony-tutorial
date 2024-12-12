@@ -3,6 +3,10 @@
 {% block title recipe.title | capitalize %}
 
 {% block body %}
-    <h2>{{ recipe.title | capitalize }}</h2>
+    <div class="d-flex gap-4 justify-content-between align-top mb-4">
+        <h2 class="m-0">{{ recipe.title | capitalize }}</h2>
+        <a class="btn btn-primary"
+           href="{{ path('recipe.edit', {id: recipe.id}) }}">Edit</a>
+    </div>
     <p>{{ recipe.content }}</p>
 {% endblock %}

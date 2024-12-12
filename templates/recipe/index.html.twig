@@ -3,12 +3,51 @@
 {% block title "Toutes les recettes" %}
 
 {% block body %}
-    All recipes (more than {{ (totalDuration / 60) | round(0, 'floor') }} hours!)
-    <ul>
+    <div class="d-flex justify-content-between align-items-center">
+        <p>
+            All recipes (more than {{ (totalDuration / 60) | round(0, 'floor') }} hours!)
+        </p>
+        <a class="btn btn-primary"
+           href="{{ path('recipe.create') }}">Add a recipe</a>
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Duration (minutes)</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
         {% for recipe in recipes %}
-            <li>
-                <a href="{{ path('recipe.show', {id: recipe.id, slug: recipe.slug}) }}">{{ recipe.title }}</a>
-            </li>
+            <tr>
+                <td>
+                    <a href="{{ path('recipe.show', {id: recipe.id, slug: recipe.slug}) }}">{{ recipe.title }}</a>
+                </td>
+                <td>
+                    <p>{{ recipe.duration }}</p>
+                </td>
+                <td class="d-flex gap-2">
+                    <a class="btn btn-outline-primary"
+                       href="{{ path('recipe.show', {id: recipe.id, slug: recipe.slug}) }}">View</a>
+                    <a class="btn btn-outline-primary"
+                       href="{{ path('recipe.edit', {id: recipe.id}) }}">Edit</a>
+                    <a class="btn btn-outline-danger"
+                       href="{{ path('recipe.delete_form', {id: recipe.id}) }}">Delete</a>
+                </td>
+            </tr>
         {% endfor %}
-    </ul>
+        </tbody>
+    </table>
+    {% set totalPages = (totalRecipes / 10) | round(0, 'ceil') %}
+    <div class="d-flex gap-4 justify-content-center">
+        {% for page in 1..totalPages %}
+            {% if page == app.request.query.get('page', 1) %}
+                <span class="btn btn-outline-primary active">{{ page }}</span>
+            {% else %}
+                <a class="btn btn-outline-primary"
+                   href="{{ path('recipe.index', {page: page}) }}">{{ page }}</a>
+            {% endif %}
+        {% endfor %}
+    </div>
 {% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit : {{ recipe.title | capitalize }}{% endblock %}
+
+{% block body %}
+    <div class="d-flex align-items-top justify-content-between mb-4">
+        <h2 class="m-0">Edit : {{ recipe.title | capitalize }}</h2>
+        <a class="btn btn-outline-danger"
+           href="{{ path('recipe.delete_form', {id: recipe.id}) }}">Delete</a>
+    </div>
+
+    {{ form(recipeForm) }}
+{% endblock %}
