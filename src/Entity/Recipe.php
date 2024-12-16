@@ -3,14 +3,17 @@
 namespace App\Entity;
 
 use App\Repository\RecipeRepository;
+use App\Validator\BannedWords;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RecipeRepository::class)]
 #[ORM\HasLifecycleCallbacks]
+#[UniqueEntity('title')]
 #[UniqueEntity('slug')]
 class Recipe
 {
@@ -19,13 +22,18 @@ class Recipe
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $title = null;
+    #[ORM\Column(length: 255, unique: true)]
+    #[Assert\Length(min: 5, max: 40)]
+    #[Assert\Regex('/^[a-zA-Z\-\'\, ]+$/', message: "This value can only contain alphabetical characters, dashes, apostrophes and spaces.")]
+    #[BannedWords()]
+    private string $title = '';
 
     #[ORM\Column(length: 255, unique: true)]
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\Length(min: 20, max: 500)]
+    #[BannedWords()]
     private ?string $content = null;
 
     #[ORM\Column]
@@ -35,6 +43,8 @@ class Recipe
     private ?DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\Positive()]
+    #[Assert\LessThan(value: 1440)]
     private ?int $duration = null;
 
     private SluggerInterface $slugger;
@@ -67,7 +77,7 @@ class Recipe
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getTitle(): string
     {
         return $this->title;
     }
