@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title recipe.title | capitalize %}
+{% block title %}{{ recipe.title | capitalize }} | Recipy{% endblock %}
 
 {% block body %}
     <div class="d-flex gap-4 justify-content-between align-top mb-4">

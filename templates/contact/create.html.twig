@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contact | Recipy{% endblock %}
+
+{% block body %}
+    <h2>Contact us !</h2>
+    <p>Feel free to send us a little message :)</p>
+    {{ form_start(contactForm) }}
+    {{ form_errors(contactForm) }}
+    <div class="d-flex gap-4">
+        <div class="flex-grow-1">
+            {{ form_row(contactForm.firstname) }}
+        </div>
+        <div class="flex-grow-1">
+            {{ form_row(contactForm.lastname) }}
+        </div>
+        <div class="flex-grow-1">
+            {{ form_row(contactForm.email) }}
+        </div>
+    </div>
+    {{ form_row(contactForm.message) }}
+    <div class="d-flex justify-content-end">
+        {{ form_row(contactForm.submit) }}
+    </div>
+    {{ form_end(contactForm) }}
+{% endblock %}

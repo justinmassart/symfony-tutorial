@@ -1,0 +1,13 @@
+{% apply markdown_to_html %}
+    Hello {{ data.firstname }} {{ data.lastname }} !
+    ---
+
+    You just emailed us this message :
+
+    *{{ data.content }}*
+
+    We will reply to you as soon as possible,
+    take care,
+    Recipy.
+
+{% endapply %}
