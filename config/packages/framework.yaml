@@ -9,6 +9,10 @@ framework:
   #fragments: true
   http_method_override: true
 
+  form:
+    csrf_protection:
+      enabled: true
+
 when@test:
   framework:
     test: true
