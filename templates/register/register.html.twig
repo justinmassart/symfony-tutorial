@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register | Recipy{% endblock %}
+
+{% block body %}
+    <div>
+        {{ form_start(registerForm) }}
+        {{ form_errors(registerForm) }}
+        <div class="d-flex gap-4">
+            <div class="flex-grow-1">
+                {{ form_row(registerForm.firstname) }}
+            </div>
+            <div class="flex-grow-1">
+                {{ form_row(registerForm.lastname) }}
+            </div>
+        </div>
+        {{ form_row(registerForm.username) }}
+        {{ form_row(registerForm.email) }}
+        {{ form_row(registerForm.password) }}
+        <div class="d-flex justify-content-end">
+            {{ form_row(registerForm.submit) }}
+        </div>
+        {{ form_end(registerForm) }}
+    </div>
+{% endblock %}
