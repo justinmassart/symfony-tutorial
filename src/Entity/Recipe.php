@@ -61,13 +61,13 @@ class Recipe
     }
 
     #[ORM\PrePersist]
-    public function createTimestamps(): void
+    public function generateCreatedAtTimestamp(): void
     {
         $this->createdAt = new DateTimeImmutable();
     }
 
     #[ORM\PreFlush, ORM\PreUpdate]
-    public function updateTimestamps(): void
+    public function generateUpdatedAtTimestamp(): void
     {
         $this->updatedAt = new DateTimeImmutable();
     }

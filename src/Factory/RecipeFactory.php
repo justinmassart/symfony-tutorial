@@ -4,7 +4,7 @@ namespace App\Factory;
 
 use App\Entity\Recipe;
 use DateTimeImmutable;
-use Symfony\Component\String\Slugger\AsciiSlugger;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -12,13 +12,11 @@ use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
  */
 final class RecipeFactory extends PersistentProxyObjectFactory
 {
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
-     *
-     * @todo inject services if required
-     */
-    public function __construct()
+    private SluggerInterface $slugger;
+
+    public function __construct(SluggerInterface $slugger)
     {
+        $this->slugger = $slugger;
     }
 
     public static function class(): string
@@ -35,16 +33,16 @@ final class RecipeFactory extends PersistentProxyObjectFactory
     {
         $titleNbWords = rand(1, 4);
         $title = self::faker()->words($titleNbWords, true);
-        $slugger = new AsciiSlugger();
-        $slug = $slugger->slug($title);
+        $slug = $this->slugger->slug($title);
+        $timestamp = DateTimeImmutable::createFromMutable(self::faker()->dateTime());
 
         return [
             'content' => self::faker()->text(),
-            'createdAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'createdAt' => $timestamp,
             'duration' => rand(10, 240),
             'slug' => $slug,
             'title' => $title,
-            'updatedAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'updatedAt' => $timestamp,
         ];
     }
 
@@ -53,7 +51,8 @@ final class RecipeFactory extends PersistentProxyObjectFactory
      */
     protected function initialize(): static
     {
-        return $this// ->afterInstantiate(function(Recipe $recipe): void {})
-            ;
+        return $this->afterInstantiate(function (Recipe $recipe): void {
+            $recipe->setSlugger($this->slugger);
+        });
     }
 }
