@@ -21,13 +21,14 @@
         <tbody>
         {% for recipe in recipes %}
             <tr>
-                <td>
-                    <a href="{{ path('recipe.show', {id: recipe.id, slug: recipe.slug}) }}">{{ recipe.title }}</a>
+                <td class="align-middle">
+                    <a class="d-block text-black link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hover"
+                       href="{{ path('recipe.show', {id: recipe.id, slug: recipe.slug}) }}">{{ recipe.title }}</a>
                 </td>
-                <td>
-                    <p>{{ recipe.duration }}</p>
+                <td class="align-middle">
+                    <p class="{{ recipe.duration ? '' : 'opacity-50' }} mb-0">{{ recipe.duration ?? 'N.A' }}</p>
                 </td>
-                <td class="d-flex gap-2">
+                <td class="d-flex gap-2 align-items-center align-middle">
                     <a class="btn btn-outline-primary"
                        href="{{ path('recipe.show', {id: recipe.id, slug: recipe.slug}) }}">View</a>
                     <a class="btn btn-outline-primary"
