@@ -1,0 +1,54 @@
+.profile-list-item {
+    height: 32px;
+    width: 32px;
+}
+
+.profile {
+    background: white;
+    height: 100%;
+    width: 100%;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.drawer {
+    display: none;
+    position: absolute;
+    z-index: 9999;
+    top: 40px;
+    right: 0;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 200px;
+    padding: 16px;
+}
+
+.drawer ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.drawer ul li {
+    padding: 8px 0;
+}
+
+.drawer ul li a {
+    text-decoration: none;
+    color: black;
+    display: block;
+}
+
+.drawer ul li a:hover {
+    text-decoration: underline;
+}
+
+input[type="checkbox"] {
+    display: none;
+}
+
+input[type="checkbox"]:checked + .profile + .drawer {
+    display: block;
+}
