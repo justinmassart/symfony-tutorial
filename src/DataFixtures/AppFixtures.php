@@ -11,15 +11,28 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        UserFactory::createOne([
+        $admin = UserFactory::createOne([
             'firstname' => 'Justin',
             'lastname' => 'Massart',
             'username' => 'TheDev',
             'email' => 'justin@mail.com',
             'roles' => ['ROLE_ADMIN'],
         ]);
-        UserFactory::createMany(25);
-        RecipeFactory::createMany(25);
+
+        $users = UserFactory::createMany(10);
+
+        foreach ($users as $user) {
+            $user->_disableAutoRefresh();
+
+            $randomRecipeCount = rand(0, 2);
+
+            RecipeFactory::createMany($randomRecipeCount, function () use ($user) {
+                return [
+                    'user' => $user,
+                ];
+            });
+        }
+
 
         $manager->flush();
     }
