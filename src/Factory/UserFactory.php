@@ -37,6 +37,7 @@ final class UserFactory extends PersistentProxyObjectFactory
 
         return [
             'createdAt' => $timestamp,
+            'deletedAt' => null,
             'email' => self::faker()->unique()->email(),
             'firstname' => self::faker()->firstName(),
             'lastname' => self::faker()->lastName(),

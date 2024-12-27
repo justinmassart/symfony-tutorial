@@ -39,6 +39,7 @@ final class RecipeFactory extends PersistentProxyObjectFactory
         return [
             'content' => self::faker()->text(),
             'createdAt' => $timestamp,
+            'deletedAt' => null,
             'duration' => rand(10, 240),
             'slug' => $slug,
             'title' => $title,
