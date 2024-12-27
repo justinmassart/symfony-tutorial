@@ -6,6 +6,7 @@ use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class LoginController extends AbstractController
@@ -22,7 +23,7 @@ class LoginController extends AbstractController
         return $this->render('login/login.html.twig', compact('lastUsername', 'error'));
     }
 
-    #[Route(path: '/logout', name: 'auth.logout')]
+    #[IsGranted('IS_AUTHENTICATED'), Route(path: '/logout', name: 'auth.logout')]
     public function logout(): void
     {
         throw new LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');

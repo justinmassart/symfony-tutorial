@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class RecipeController extends AbstractController
@@ -50,7 +51,7 @@ class RecipeController extends AbstractController
         return $this->render('recipe/show.html.twig', compact('recipe'));
     }
 
-    #[Route('/recipes/create', name: 'recipe.create')]
+    #[IsGranted('IS_AUTHENTICATED'), Route('/recipes/create', name: 'recipe.create')]
     public function create(Request $request, EntityManagerInterface $em): Response
     {
         $recipe = new Recipe();
@@ -68,7 +69,7 @@ class RecipeController extends AbstractController
         return $this->render('recipe/create.html.twig', compact('recipeForm'));
     }
 
-    #[Route('/recipes/{id}/edit', name: 'recipe.edit', methods: ['GET', 'POST'])]
+    #[IsGranted('IS_AUTHENTICATED'), Route('/recipes/{id}/edit', name: 'recipe.edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Recipe $recipe, EntityManagerInterface $em): Response
     {
         $recipe->setSlugger($this->slugger);
@@ -84,13 +85,15 @@ class RecipeController extends AbstractController
         return $this->render('recipe/edit.html.twig', compact('recipe', 'recipeForm'));
     }
 
-    #[Route('/recipes/{id}/delete', name: 'recipe.delete_form', methods: ['GET', 'POST'])]
+    #[IsGranted('IS_AUTHENTICATED'), Route('/recipes/{id}/delete', name: 'recipe.delete_form', methods: [
+        'GET', 'POST'
+    ])]
     public function confirmDelete(Recipe $recipe): Response
     {
         return $this->render('recipe/confirm-delete.html.twig', compact('recipe'));
     }
 
-    #[Route('/recipes/{id}', name: 'recipe.delete', methods: ['DELETE'])]
+    #[IsGranted('IS_AUTHENTICATED'), Route('/recipes/{id}', name: 'recipe.delete', methods: ['DELETE'])]
     public function delete(Recipe $recipe, EntityManagerInterface $em): Response
     {
         $this->addFlash('success', 'The recipe "'.$recipe->getTitle().'" was successfully deleted.');
