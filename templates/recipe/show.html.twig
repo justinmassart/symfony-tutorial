@@ -6,7 +6,7 @@
     <div class="d-flex gap-4 justify-content-between align-top mb-4">
         <h2 class="m-0">{{ recipe.title | capitalize }}</h2>
         <a class="btn btn-primary"
-           href="{{ path('recipe.edit', {id: recipe.id}) }}">Edit</a>
+           href="{{ path('recipe.edit', {username: recipe.user.username, slug: recipe.slug}) }}">Edit</a>
     </div>
     <p>{{ recipe.content }}</p>
 {% endblock %}

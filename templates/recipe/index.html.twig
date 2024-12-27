@@ -16,6 +16,7 @@
         <thead>
         <tr>
             <th>Title</th>
+            <th>Made By</th>
             <th>Duration (minutes)</th>
             <th>Actions</th>
         </tr>
@@ -25,19 +26,22 @@
             <tr>
                 <td class="align-middle">
                     <a class="d-block text-black link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hover"
-                       href="{{ path('recipe.show', {id: recipe.id, slug: recipe.slug}) }}">{{ recipe.title }}</a>
+                       href="{{ path('recipe.show', {username: recipe.user.username, slug: recipe.slug}) }}">{{ recipe.title }}</a>
+                </td>
+                <td class="align-middle">
+                    <p class="mb-0">{{ recipe.user.username }}</p>
                 </td>
                 <td class="align-middle">
                     <p class="{{ recipe.duration ? '' : 'opacity-50' }} mb-0">{{ recipe.duration ?? 'N.A' }}</p>
                 </td>
                 <td class="d-flex gap-2 align-items-center align-middle">
                     <a class="btn btn-outline-primary"
-                       href="{{ path('recipe.show', {id: recipe.id, slug: recipe.slug}) }}">View</a>
-                    {% if is_granted('IS_AUTHENTICATED') %}
+                       href="{{ path('recipe.show', {username: recipe.user.username, slug: recipe.slug}) }}">View</a>
+                    {% if (is_granted('IS_AUTHENTICATED')) and (app.user.id is same as(recipe.user.id)) %}
                         <a class="btn btn-outline-primary"
-                           href="{{ path('recipe.edit', {id: recipe.id}) }}">Edit</a>
+                           href="{{ path('recipe.edit', {username: recipe.user.username, slug: recipe.slug}) }}">Edit</a>
                         <a class="btn btn-outline-danger"
-                           href="{{ path('recipe.delete_form', {id: recipe.id}) }}">Delete</a>
+                           href="{{ path('recipe.delete_form', {username: recipe.user.username, slug: recipe.slug}) }}">Delete</a>
                     {% endif %}
                 </td>
             </tr>

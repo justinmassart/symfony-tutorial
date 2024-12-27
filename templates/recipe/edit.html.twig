@@ -6,7 +6,7 @@
     <div class="d-flex align-items-top justify-content-between mb-4">
         <h2 class="m-0">Edit : {{ recipe.title | capitalize }}</h2>
         <a class="btn btn-outline-danger"
-           href="{{ path('recipe.delete_form', {id: recipe.id}) }}">Delete</a>
+           href="{{ path('recipe.delete_form', {username: recipe.user.username, slug: recipe.slug}) }}">Delete</a>
     </div>
 
     {{ form(recipeForm) }}
