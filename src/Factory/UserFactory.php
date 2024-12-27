@@ -5,16 +5,19 @@ namespace App\Factory;
 use App\Entity\User;
 use DateTimeImmutable;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 final class UserFactory extends PersistentProxyObjectFactory
 {
 
     private UserPasswordHasherInterface $passwordHasher;
+    private SluggerInterface $slugger;
 
-    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    public function __construct(UserPasswordHasherInterface $passwordHasher, SluggerInterface $slugger)
     {
         $this->passwordHasher = $passwordHasher;
+        $this->slugger = $slugger;
     }
 
     public static function class(): string
@@ -35,16 +38,20 @@ final class UserFactory extends PersistentProxyObjectFactory
         $plaintextPassword = 'password';
         $hashedPassword = $this->passwordHasher->hashPassword($user, $plaintextPassword);
 
+        $firstname = self::faker()->firstName();
+        $lastname = self::faker()->lastname();
+        $username = $this->slugger->slug($firstname.$lastname);
+
         return [
             'createdAt' => $timestamp,
             'deletedAt' => null,
             'email' => self::faker()->unique()->email(),
-            'firstname' => self::faker()->firstName(),
-            'lastname' => self::faker()->lastName(),
+            'firstname' => $firstname,
+            'lastname' => $lastname,
             'password' => $hashedPassword,
             'roles' => ['ROLE_USER'],
             'updatedAt' => $timestamp,
-            'username' => self::faker()->userName(),
+            'username' => $username,
         ];
     }
 
