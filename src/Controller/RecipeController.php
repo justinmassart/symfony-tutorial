@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Recipe;
 use App\Form\RecipeType;
 use App\Repository\RecipeRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,14 +40,24 @@ class RecipeController extends AbstractController
         return $this->render('recipe/index.html.twig', compact('recipes', 'totalDuration', 'totalRecipes'));
     }
 
-    #[Route('/recipes/{slug}-{id}', name: 'recipe.show', requirements: ['id' => '\d+', 'slug' => '[a-z0-9-]+'])]
-    public function show(Request $request, string $slug, int $id, RecipeRepository $repo): Response
-    {
-        $recipe = $repo->find($id);
+    #[Route('/recipes/{slug}-by-{username}', name: 'recipe.show', requirements: [
+        'username' => '^[a-zA-Z0-9\-\_\.\'\, ]+$', 'slug' => '[a-z0-9-]+'
+    ])]
+    public function show(
+        Request $request,
+        string $slug,
+        string $username,
+        RecipeRepository $repo,
+        UserRepository $userRepo
+    ): Response {
+        $user = $userRepo->findOneBy([
+            'username' => $username
+        ]);
 
-        if ($recipe->getSlug() !== $slug) {
-            return $this->redirectToRoute('recipe.show', ['slug' => $recipe->getSlug(), 'id' => $id]);
-        }
+        $recipe = $repo->findOneBy([
+            'slug' => $slug,
+            'user' => $user,
+        ]);
 
         return $this->render('recipe/show.html.twig', compact('recipe'));
     }
@@ -69,9 +80,31 @@ class RecipeController extends AbstractController
         return $this->render('recipe/create.html.twig', compact('recipeForm'));
     }
 
-    #[IsGranted('IS_AUTHENTICATED'), Route('/recipes/{id}/edit', name: 'recipe.edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Recipe $recipe, EntityManagerInterface $em): Response
-    {
+    #[IsGranted('IS_AUTHENTICATED'), Route('/recipes/{slug}-by-{username}/edit', name: 'recipe.edit', requirements: [
+        'username' => '^[a-zA-Z0-9\-\_\.\'\, ]+$', 'slug' => '[a-z0-9-]+'
+    ], methods: [
+        'GET', 'POST'
+    ])]
+    public function edit(
+        Request $request,
+        string $slug,
+        string $username,
+        UserRepository $userRepo,
+        RecipeRepository $recipeRepo,
+        EntityManagerInterface $em
+    ): Response {
+        $user = $userRepo->findOneBy([
+            'username' => $username
+        ]);
+        $recipe = $recipeRepo->findOneBy([
+            'slug' => $slug,
+            'user' => $user,
+        ]);
+
+        if ($recipe->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException();
+        }
+
         $recipe->setSlugger($this->slugger);
         $recipeForm = $this->createForm(RecipeType::class, $recipe);
         $recipeForm->handleRequest($request);
@@ -85,17 +118,52 @@ class RecipeController extends AbstractController
         return $this->render('recipe/edit.html.twig', compact('recipe', 'recipeForm'));
     }
 
-    #[IsGranted('IS_AUTHENTICATED'), Route('/recipes/{id}/delete', name: 'recipe.delete_form', methods: [
+    #[IsGranted('IS_AUTHENTICATED'), Route('/recipes/{slug}-by-{username}/delete', name: 'recipe.delete_form', requirements: [
+        'username' => '^[a-zA-Z0-9\-\_\.\'\, ]+$', 'slug' => '[a-z0-9-]+'
+    ], methods: [
         'GET', 'POST'
     ])]
-    public function confirmDelete(Recipe $recipe): Response
-    {
+    public function confirmDelete(
+        string $slug,
+        string $username,
+        UserRepository $userRepo,
+        RecipeRepository $recipeRepo,
+    ): Response {
+        $user = $userRepo->findOneBy([
+            'username' => $username
+        ]);
+        $recipe = $recipeRepo->findOneBy([
+            'slug' => $slug,
+            'user' => $user,
+        ]);
+
+        if ($recipe->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException();
+        }
+
         return $this->render('recipe/confirm-delete.html.twig', compact('recipe'));
     }
 
-    #[IsGranted('IS_AUTHENTICATED'), Route('/recipes/{id}', name: 'recipe.delete', methods: ['DELETE'])]
-    public function delete(Recipe $recipe, EntityManagerInterface $em): Response
-    {
+    #[IsGranted('IS_AUTHENTICATED'), Route('/recipes/{slug}-by-{username}', name: 'recipe.delete', methods: ['DELETE'])]
+    public function delete(
+        string $slug,
+        string $username,
+        UserRepository $userRepo,
+        RecipeRepository $recipeRepo,
+        EntityManagerInterface $em
+    ): Response {
+        $user = $userRepo->findOneBy([
+            'username' => $username
+        ]);
+        $recipe = $recipeRepo->findOneBy([
+            'slug' => $slug,
+            'user' => $user,
+        ]);
+
+        if ($recipe->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException();
+        }
+
         $this->addFlash('success', 'The recipe "'.$recipe->getTitle().'" was successfully deleted.');
         $em->remove($recipe);
         $em->flush();
