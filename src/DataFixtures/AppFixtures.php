@@ -16,6 +16,7 @@ class AppFixtures extends Fixture
             'lastname' => 'Massart',
             'username' => 'TheDev',
             'email' => 'justin@mail.com',
+            'roles' => ['ROLE_ADMIN'],
         ]);
         UserFactory::createMany(25);
         RecipeFactory::createMany(25);
