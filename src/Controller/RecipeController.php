@@ -6,6 +6,7 @@ use App\Entity\Recipe;
 use App\Form\RecipeType;
 use App\Repository\RecipeRepository;
 use App\Repository\UserRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,8 +19,10 @@ class RecipeController extends AbstractController
 {
     private SluggerInterface $slugger;
 
-    public function __construct(SluggerInterface $slugger, EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        SluggerInterface $slugger,
+        EntityManagerInterface $entityManager,
+    ) {
         $this->slugger = $slugger;
     }
 
@@ -66,6 +69,7 @@ class RecipeController extends AbstractController
     public function create(Request $request, EntityManagerInterface $em): Response
     {
         $recipe = new Recipe();
+        $recipe->setUser($this->getUser());
         $recipe->setSlugger($this->slugger);
         $recipeForm = $this->createForm(RecipeType::class, $recipe);
         $recipeForm->handleRequest($request);
@@ -118,7 +122,7 @@ class RecipeController extends AbstractController
         return $this->render('recipe/edit.html.twig', compact('recipe', 'recipeForm'));
     }
 
-    #[IsGranted('IS_AUTHENTICATED'), Route('/recipes/{slug}-by-{username}/delete', name: 'recipe.delete_form', requirements: [
+    #[IsGranted('IS_AUTHENTICATED'), Route('/recipes/{slug}-by-{username}/confirm-delete', name: 'recipe.delete_form', requirements: [
         'username' => '^[a-zA-Z0-9\-\_\.\'\, ]+$', 'slug' => '[a-z0-9-]+'
     ], methods: [
         'GET', 'POST'
@@ -144,7 +148,9 @@ class RecipeController extends AbstractController
         return $this->render('recipe/confirm-delete.html.twig', compact('recipe'));
     }
 
-    #[IsGranted('IS_AUTHENTICATED'), Route('/recipes/{slug}-by-{username}', name: 'recipe.delete', methods: ['DELETE'])]
+    #[IsGranted('IS_AUTHENTICATED'), Route('/recipes/{slug}-by-{username}/delete', name: 'recipe.delete', requirements: [
+        'username' => '^[a-zA-Z0-9\-\_\.\'\, ]+$', 'slug' => '[a-z0-9-]+'
+    ], methods: ['DELETE'])]
     public function delete(
         string $slug,
         string $username,
@@ -164,8 +170,10 @@ class RecipeController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
+        $recipe->setSlugger($this->slugger);
+
         $this->addFlash('success', 'The recipe "'.$recipe->getTitle().'" was successfully deleted.');
-        $em->remove($recipe);
+        $recipe->setDeletedAt(new DateTimeImmutable());
         $em->flush();
         return $this->redirectToRoute('recipe.index');
     }
