@@ -38,7 +38,7 @@ class RecipeRepository extends ServiceEntityRepository
     public function findWithDurationLowerThan(int $duration): array
     {
         return $this->createQueryBuilder('r')
-            ->where('r.duration <= :duration')
+            ->where('r.duration <= :duration' and 'r.deletedAt is null')
             ->orderBy('r.duration', 'ASC')
             ->setMaxResults(10)
             ->setParameter('duration', $duration)
@@ -55,6 +55,7 @@ class RecipeRepository extends ServiceEntityRepository
         $offset = ($page - 1) * $resultsPerPage;
 
         return $this->createQueryBuilder('r')
+            ->where('r.deletedAt is null')
             ->orderBy('r.createdAt', 'DESC')
             ->setMaxResults($resultsPerPage)
             ->setFirstResult($offset)
