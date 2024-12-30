@@ -10,8 +10,12 @@
         <a class="btn btn-primary"
            href="{{ path('recipe.index') }}">Cancel</a>
         <form
-                action="{{ path('recipe.delete', {id: recipe.id}) }}"
+                action="{{ path('recipe.delete', {username: recipe.user.username, slug: recipe.slug}) }}"
                 method="POST">
+            <input type="hidden"
+                   name="_csrf_token"
+                   value="{{ csrf_token('authenticate') }}"
+            >
             <input type="hidden"
                    name="_method"
                    value="DELETE">
